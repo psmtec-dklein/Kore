@@ -131,7 +131,7 @@ namespace Kore {
 		//void useDepthAsTexture(int texunit);
 	};
 
-	namespace Graphics {
+	namespace Graphics4 {
 		void setBool(ConstantLocation location, bool value);
 		void setInt(ConstantLocation location, int value);
 		void setFloat(ConstantLocation location, float value);

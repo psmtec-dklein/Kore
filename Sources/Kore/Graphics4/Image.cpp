@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Image.h"
 #include <Kore/IO/FileReader.h>
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 #include "stb_image.h"
 #include <stdio.h>
 #include <string.h>

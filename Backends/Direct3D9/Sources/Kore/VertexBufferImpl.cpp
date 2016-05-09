@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "VertexBufferImpl.h"
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics4/Graphics.h>
 #include <Kore/WinError.h>
 #include "Direct3D9.h"
 

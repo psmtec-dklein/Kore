@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Kore/TextureImpl.h>
-#include <Kore/Graphics/Image.h>
+#include <Kore/Graphics4/Image.h>
 
 namespace Kore {
 	class TextureUnit : public TextureUnitImpl {

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <Kore/Graphics/Shader.h>
+#include <Kore/Graphics4/Shader.h>
 #include <Kore/Math/Core.h>
 #include "Direct3D9.h"
 #include <cstdio>

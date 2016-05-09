@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ProgramImpl.h"
-#include <Kore/Graphics/Shader.h>
+#include <Kore/Graphics4/Shader.h>
 #include <Kore/Log.h>
 #include <Kore/System.h>
 #include <Kore/WinError.h>

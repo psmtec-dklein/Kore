@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <Kore/Math/Core.h>
 #include "Direct3D9.h"
-#include <Kore/Graphics/Shader.h>
+#include <Kore/Graphics4/Shader.h>
 #undef CreateWindow
 #include <Kore/System.h>
 #include <Kore/WinError.h>
@@ -86,11 +86,11 @@ namespace {
 	}
 }
 
-void Graphics::destroy(int windowId) {
+void Graphics4::destroy(int windowId) {
 
 }
 
-void Graphics::changeResolution(int width, int height) {
+void Graphics4::changeResolution(int width, int height) {
 	if(!resizable){
 		return;
 	}
@@ -124,12 +124,12 @@ void Graphics::changeResolution(int width, int height) {
 	initDeviceStates();*/
 }
 
-void Graphics::setup() {
+void Graphics4::setup() {
 	d3d = Direct3DCreate9(D3D_SDK_VERSION);
 	//if (!d3d) throw Exception("Could not initialize Direct3D9");
 }
 
-void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
+void Graphics4::init(int windowId, int depthBufferBits, int stencilBufferBits) {
 	if (!hasWindow()) return;
 
 	hWnd = (HWND)System::windowHandle(windowId);
@@ -261,7 +261,7 @@ void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
 	System::makeCurrent(windowId);
 }
 
-void Graphics::flush() {
+void Graphics4::flush() {
 
 }
 
@@ -319,7 +319,7 @@ namespace {
 	}
 }
 
-void Graphics::setColorMask(bool red, bool green, bool blue, bool alpha) {
+void Graphics4::setColorMask(bool red, bool green, bool blue, bool alpha) {
 	DWORD flags = 0;
 	if (red) flags |= D3DCOLORWRITEENABLE_RED;
 	if (green) flags |= D3DCOLORWRITEENABLE_GREEN;
@@ -329,33 +329,33 @@ void Graphics::setColorMask(bool red, bool green, bool blue, bool alpha) {
 	device->SetRenderState(D3DRS_COLORWRITEENABLE, flags);
 }
 
-void Graphics::setTextureOperation(TextureOperation operation, TextureArgument arg1, TextureArgument arg2) {
+void Graphics4::setTextureOperation(TextureOperation operation, TextureArgument arg1, TextureArgument arg2) {
 	device->SetTextureStageState(0, D3DTSS_COLOROP, convert(operation));
 	device->SetTextureStageState(0, D3DTSS_COLORARG1, convert(arg1));
 	device->SetTextureStageState(0, D3DTSS_COLORARG2, convert(arg2));
 }
 
-void Graphics::setTextureMagnificationFilter(TextureUnit texunit, TextureFilter filter) {
+void Graphics4::setTextureMagnificationFilter(TextureUnit texunit, TextureFilter filter) {
 	device->SetSamplerState(texunit.unit, D3DSAMP_MAGFILTER, convertFilter(filter));
 }
 
-void Graphics::setTextureMinificationFilter(TextureUnit texunit, TextureFilter filter) {
+void Graphics4::setTextureMinificationFilter(TextureUnit texunit, TextureFilter filter) {
 	device->SetSamplerState(texunit.unit, D3DSAMP_MINFILTER, convertFilter(filter));
 }
 
-void Graphics::setTextureMipmapFilter(TextureUnit texunit, MipmapFilter filter) {
+void Graphics4::setTextureMipmapFilter(TextureUnit texunit, MipmapFilter filter) {
 	device->SetSamplerState(texunit.unit, D3DSAMP_MIPFILTER, convertMipFilter(filter));
 }
 
-void Graphics::makeCurrent( int contextId ) {
+void Graphics4::makeCurrent( int contextId ) {
 	// TODO (DK) implement me
 }
 
-void Graphics::clearCurrent() {
+void Graphics4::clearCurrent() {
 	// TODO (DK) implement me
 }
 
-void Graphics::setRenderTarget(RenderTarget* target, int num, int additionalTargets) {
+void Graphics4::setRenderTarget(RenderTarget* target, int num, int additionalTargets) {
 	//if (backBuffer != nullptr) backBuffer->Release();
 	
 	System::makeCurrent(target->contextId);
@@ -376,7 +376,7 @@ void Graphics::setRenderTarget(RenderTarget* target, int num, int additionalTarg
 //	affirm(device->SetDepthStencilSurface(dcast<D3D9Texture*>(texture)->getSurface()));
 //}
 
-void Graphics::restoreRenderTarget() {
+void Graphics4::restoreRenderTarget() {
 	if (backBuffer != nullptr) {
 		device->SetRenderTarget(0, backBuffer);
 		device->SetRenderTarget(1, nullptr);
@@ -389,25 +389,25 @@ void Graphics::restoreRenderTarget() {
 	}
 }
 
-void Graphics::drawIndexedVertices() {
+void Graphics4::drawIndexedVertices() {
 	device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, VertexBuffer::_current->count(), 0, IndexBuffer::_current->count() / 3);
 }
 
-void Graphics::drawIndexedVertices(int start, int count) {
+void Graphics4::drawIndexedVertices(int start, int count) {
 	device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, VertexBuffer::_current->count(), start, count / 3);
 }
 
-void Graphics::drawIndexedVerticesInstanced(int instanceCount) {
+void Graphics4::drawIndexedVerticesInstanced(int instanceCount) {
 	affirm(device->SetStreamSourceFreq(VertexBuffer::_current->_offset, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount)));
 	device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, VertexBuffer::_current->count(), 0, IndexBuffer::_current->count() / 3 * instanceCount);
 }
 
-void Graphics::drawIndexedVerticesInstanced(int instanceCount, int start, int count) {
+void Graphics4::drawIndexedVerticesInstanced(int instanceCount, int start, int count) {
 	affirm(device->SetStreamSourceFreq(VertexBuffer::_current->_offset, (D3DSTREAMSOURCE_INDEXEDDATA | instanceCount)));
 	device->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, VertexBuffer::_current->count(), start, count / 3 * instanceCount);
 }
 
-void Graphics::setTextureAddressing(TextureUnit unit, TexDir dir, TextureAddressing addressing) {
+void Graphics4::setTextureAddressing(TextureUnit unit, TexDir dir, TextureAddressing addressing) {
 	DWORD value = 0;
 	switch (addressing) {
 	case Repeat:
@@ -450,11 +450,11 @@ namespace {
 	}
 }
 
-void Graphics::clear(uint flags, uint color, float z, int stencil) {
+void Graphics4::clear(uint flags, uint color, float z, int stencil) {
 	device->Clear(0, nullptr, flags, color, z, stencil);
 }
 
-void Graphics::begin(int windowId) {
+void Graphics4::begin(int windowId) {
 	// TODO (DK) ignore secondary windows for now
 	if (windowId > 0) {
 		return;
@@ -464,7 +464,7 @@ void Graphics::begin(int windowId) {
 	device->BeginScene();
 }
 
-void Graphics::viewport(int x, int y, int width, int height) {
+void Graphics4::viewport(int x, int y, int width, int height) {
 	vp.X = x;
 	vp.Y = y;
 	vp.Width = width;
@@ -472,19 +472,19 @@ void Graphics::viewport(int x, int y, int width, int height) {
 	device->SetViewport(&vp);
 }
 
-void Graphics::scissor(int x, int y, int width, int height) {
+void Graphics4::scissor(int x, int y, int width, int height) {
 	// TODO
 }
 
-void Graphics::disableScissor() {
+void Graphics4::disableScissor() {
 	// TODO
 }
 
-void Graphics::setStencilParameters(ZCompareMode compareMode, StencilAction bothPass, StencilAction depthFail, StencilAction stencilFail, int referenceValue, int readMask, int writeMask) {
+void Graphics4::setStencilParameters(ZCompareMode compareMode, StencilAction bothPass, StencilAction depthFail, StencilAction stencilFail, int referenceValue, int readMask, int writeMask) {
 	// TODO
 }
 
-void Graphics::end(int windowId) {
+void Graphics4::end(int windowId) {
 	// TODO (DK) ignore secondary windows for now
 	if (windowId > 0) {
 		return;
@@ -497,15 +497,15 @@ void Graphics::end(int windowId) {
 	device->EndScene();
 }
 
-bool Graphics::vsynced() {
+bool Graphics4::vsynced() {
 	return vsync;
 }
 
-unsigned Graphics::refreshRate() {
+unsigned Graphics4::refreshRate() {
 	return hz;
 }
 
-void Graphics::swapBuffers(int windowId) {
+void Graphics4::swapBuffers(int windowId) {
 	// TODO (DK) ignore secondary windows for now
 	if (windowId > 0) {
 		return;
@@ -536,12 +536,12 @@ namespace {
 	}
 }
 
-void Graphics::setBlendingMode(BlendingOperation source, BlendingOperation destination) {
+void Graphics4::setBlendingMode(BlendingOperation source, BlendingOperation destination) {
 	device->SetRenderState(D3DRS_SRCBLEND, convert(source));
 	device->SetRenderState(D3DRS_DESTBLEND, convert(destination));
 }
 
-void Graphics::setRenderState(RenderState state, bool on) {
+void Graphics4::setRenderState(RenderState state, bool on) {
 	switch (state) {
 	case BlendingState:
 		device->SetRenderState(D3DRS_ALPHABLENDENABLE, on ? TRUE : FALSE);
@@ -567,7 +567,7 @@ void Graphics::setRenderState(RenderState state, bool on) {
 	}
 }
 
-void Graphics::setRenderState(RenderState state, int v) {
+void Graphics4::setRenderState(RenderState state, int v) {
 	switch (state) {
 	case DepthTestCompare:
 		switch (v) {
@@ -604,11 +604,11 @@ void Graphics::setRenderState(RenderState state, int v) {
 	}
 }
 
-void Graphics::setRenderState(RenderState state, float value) {
+void Graphics4::setRenderState(RenderState state, float value) {
 	
 }
 
-void Graphics::setBool(ConstantLocation position, bool value) {
+void Graphics4::setBool(ConstantLocation position, bool value) {
 	if (position.shaderType == -1) return;
 	BOOL bools[4];
 	bools[0] = value ? 1 : 0;
@@ -619,7 +619,7 @@ void Graphics::setBool(ConstantLocation position, bool value) {
 	else device->SetPixelShaderConstantB(position.reg.regindex, &bools[0], 1);
 }
 
-void Graphics::setInt(ConstantLocation position, int value) {
+void Graphics4::setInt(ConstantLocation position, int value) {
 	if (position.shaderType == -1) return;
 	int ints[4];
 	ints[0] = value;
@@ -630,7 +630,7 @@ void Graphics::setInt(ConstantLocation position, int value) {
 	else device->SetPixelShaderConstantI(position.reg.regindex, &ints[0], 1);
 }
 
-void Graphics::setFloat(ConstantLocation position, float value) {
+void Graphics4::setFloat(ConstantLocation position, float value) {
 	if (position.shaderType == -1) return;
 	float floats[4];
 	floats[0] = value;
@@ -641,7 +641,7 @@ void Graphics::setFloat(ConstantLocation position, float value) {
 	else device->SetPixelShaderConstantF(position.reg.regindex, floats, 1);
 }
 
-void Graphics::setFloat2(ConstantLocation position, float value1, float value2) {
+void Graphics4::setFloat2(ConstantLocation position, float value1, float value2) {
 	if (position.shaderType == -1) return;
 	float floats[4];
 	floats[0] = value1;
@@ -652,7 +652,7 @@ void Graphics::setFloat2(ConstantLocation position, float value1, float value2) 
 	else device->SetPixelShaderConstantF(position.reg.regindex, floats, 1);
 }
 
-void Graphics::setFloat3(ConstantLocation position, float value1, float value2, float value3) {
+void Graphics4::setFloat3(ConstantLocation position, float value1, float value2, float value3) {
 	if (position.shaderType == -1) return;
 	float floats[4];
 	floats[0] = value1;
@@ -663,7 +663,7 @@ void Graphics::setFloat3(ConstantLocation position, float value1, float value2, 
 	else device->SetPixelShaderConstantF(position.reg.regindex, floats, 1);
 }
 
-void Graphics::setFloat4(ConstantLocation position, float value1, float value2, float value3, float value4) {
+void Graphics4::setFloat4(ConstantLocation position, float value1, float value2, float value3, float value4) {
 	if (position.shaderType == -1) return;
 	float floats[4];
 	floats[0] = value1;
@@ -674,7 +674,7 @@ void Graphics::setFloat4(ConstantLocation position, float value1, float value2, 
 	else device->SetPixelShaderConstantF(position.reg.regindex, floats, 1);
 }
 
-void Graphics::setFloats(ConstantLocation location, float* values, int count) {
+void Graphics4::setFloats(ConstantLocation location, float* values, int count) {
 	if (location.shaderType == -1) return;
 	int registerCount = (count + 3) / 4; // round up
 	if (registerCount == count / 4) { // round down
@@ -689,7 +689,7 @@ void Graphics::setFloats(ConstantLocation location, float* values, int count) {
 	}
 }
 
-void Graphics::setMatrix(ConstantLocation location, const mat4& value) {
+void Graphics4::setMatrix(ConstantLocation location, const mat4& value) {
 	if (location.shaderType == -1) return;
 	float floats[16];
 	for (int y = 0; y < 4; ++y) {
@@ -701,7 +701,7 @@ void Graphics::setMatrix(ConstantLocation location, const mat4& value) {
 	else device->SetPixelShaderConstantF(location.reg.regindex, floats, 4);
 }
 
-void Graphics::setMatrix(ConstantLocation location, const mat3& value) {
+void Graphics4::setMatrix(ConstantLocation location, const mat3& value) {
 	if (location.shaderType == -1) return;
 	float floats[12];
 	for (int y = 0; y < 3; ++y) {
@@ -713,24 +713,24 @@ void Graphics::setMatrix(ConstantLocation location, const mat3& value) {
 	else device->SetPixelShaderConstantF(location.reg.regindex, floats, 3);
 }
 
-bool Graphics::renderTargetsInvertedY() {
+bool Graphics4::renderTargetsInvertedY() {
 	return false;
 }
 
-bool Graphics::nonPow2TexturesSupported() {
+bool Graphics4::nonPow2TexturesSupported() {
 	return true;
 }
 
-void Graphics::setVertexBuffers(VertexBuffer** buffers, int count) {
+void Graphics4::setVertexBuffers(VertexBuffer** buffers, int count) {
 	for (int i = 0; i < count; ++i) {
 		buffers[i]->_set(i);
 	}
 }
 
-void Graphics::setIndexBuffer(IndexBuffer& buffer) {
+void Graphics4::setIndexBuffer(IndexBuffer& buffer) {
 	buffer._set();
 }
 
-void Graphics::setTexture(TextureUnit unit, Texture* texture) {
+void Graphics4::setTexture(TextureUnit unit, Texture* texture) {
 	texture->_set(unit);
 }
