@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Kore/TextureImpl.h>
+#include <Kore/Graphics4/TextureImpl.h>
 #include <Kore/Graphics4/Image.h>
 
 namespace Kore {

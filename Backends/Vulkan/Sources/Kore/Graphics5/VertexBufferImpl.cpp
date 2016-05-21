@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "VertexBufferImpl.h"
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics5/Graphics.h>
 #include "ShaderImpl.h"
 #include <vulkan/vulkan.h>
 #include <assert.h>
@@ -8,6 +8,7 @@
 #include <string.h>
 
 using namespace Kore;
+using namespace Kore::Graphics5;
 
 extern VkDevice device;
 extern VkCommandBuffer draw_cmd;
@@ -30,22 +31,22 @@ VertexBuffer::VertexBuffer(int vertexCount, const VertexStructure& structure, in
 	for (int i = 0; i < structure.size; ++i) {
 		VertexElement element = structure.elements[i];
 		switch (element.data) {
-		case ColorVertexData:
+		case Graphics4::ColorVertexData:
 			myStride += 1 * 4;
 			break;
-		case Float1VertexData:
+		case Graphics4::Float1VertexData:
 			myStride += 1 * 4;
 			break;
-		case Float2VertexData:
+		case Graphics4::Float2VertexData:
 			myStride += 2 * 4;
 			break;
-		case Float3VertexData:
+		case Graphics4::Float3VertexData:
 			myStride += 3 * 4;
 			break;
-		case Float4VertexData:
+		case Graphics4::Float4VertexData:
 			myStride += 4 * 4;
 			break;
-		case Float4x4VertexData:
+		case Graphics4::Float4x4VertexData:
 			myStride += 4 * 4 * 4;
 			break;
 		}

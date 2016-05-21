@@ -1,10 +1,10 @@
 #include "pch.h"
-#include <Kore/Graphics/Graphics.h>
+#include <Kore/Graphics5/Graphics.h>
 #include <vulkan/vulkan.h>
 #include <assert.h>
 #include <string.h>
 
-using namespace Kore;
+using namespace Kore::Graphics5;
 
 extern VkDevice device;
 extern VkCommandBuffer draw_cmd;

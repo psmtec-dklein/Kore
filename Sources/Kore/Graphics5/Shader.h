@@ -1,13 +1,13 @@
 #pragma once
 
 #include <Kore/Math/Matrix.h>
-#include "VertexStructure.h"
+#include <Kore/Graphics4/VertexStructure.h>
 #include <Kore/Graphics4/ShaderImpl.h>
 #include <Kore/Graphics4/ProgramImpl.h>
-#include "Texture.h"
+#include "../Graphics4/Texture.h"
 
 namespace Kore {
-	namespace Graphics4 {
+	namespace Graphics5 {
 		enum ShaderType {
 			FragmentShader, VertexShader, GeometryShader, TesselationControlShader, TesselationEvaluationShader, ComputeShader
 		};
@@ -29,11 +29,11 @@ namespace Kore {
 			void setGeometryShader(Shader* shader);
 			void setTesselationControlShader(Shader* shader);
 			void setTesselationEvaluationShader(Shader* shader);
-			void link(VertexStructure& structure) {
-				VertexStructure* structures[1] = { &structure };
+			void link(Graphics4::VertexStructure& structure) {
+				Graphics4::VertexStructure* structures[1] = { &structure };
 				link(structures, 1);
 			}
-			void link(VertexStructure** structures, int count);
+			void link(Graphics4::VertexStructure** structures, int count);
 			ConstantLocation getConstantLocation(const char* name);
 			TextureUnit getTextureUnit(const char* name);
 			void set();

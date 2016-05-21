@@ -32,12 +32,14 @@ if (platform === Platform.Windows) {
 	}
 	else if (graphics === GraphicsApi.Direct3D12) {
 		addBackend('Direct3D12');
+		addBackend('G4onG5');
 		project.addDefine('DIRECT3D');
 		project.addLib('dxgi');
 		project.addLib('d3d12');
 	}
 	else if (graphics === GraphicsApi.Vulkan) {
 		addBackend('Vulkan');
+		addBackend('G4onG5');
 		project.addDefine('SYS_VULKAN');
 		project.addDefine('VK_USE_PLATFORM_WIN32_KHR');
 		project.addLibFor('Win32', 'Backends/Vulkan/Libraries/win32/vulkan-1');
@@ -132,6 +134,7 @@ else if (platform === Platform.Linux) {
 	project.addLib('dl');
 	if (graphics === GraphicsApi.Vulkan) {
 		addBackend('Vulkan');
+		addBackend('G4onG5');
 		project.addLib('vulkan');
 		project.addLib('xcb');
 		project.addDefine('SYS_VULKAN');
