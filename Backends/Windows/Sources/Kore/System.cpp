@@ -864,7 +864,7 @@ int Kore::System::initWindow( WindowOptions options ) {
 	SetWindowLong(hwnd, GWL_STYLE, style);
 	
 	Graphics::setAntialiasingSamples(options.rendererOptions.antialiasing);
-	Graphics::init(windowId, options.rendererOptions.depthBufferBits, options.rendererOptions.stencilBufferBits);
+	Graphics::init(windowId, options.rendererOptions.depthBufferBits, options.rendererOptions.stencilBufferBits, options.swapControl);
 	
 	return windowId;
 }

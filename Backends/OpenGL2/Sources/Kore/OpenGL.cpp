@@ -6,6 +6,7 @@
 #include <Kore/Log.h>
 #include "ogl.h"
 #include <cstdio>
+#include <cassert>
 
 #if defined(SYS_IOS)
 #include <OpenGLES/ES2/glext.h>
@@ -13,7 +14,7 @@
 
 #ifdef SYS_WINDOWS
 	#include <GL/wglew.h>
-
+	#include <Kore/SwapControl.h>
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
 	#include <Windows.h>
@@ -35,6 +36,7 @@ namespace {
 	HINSTANCE instance = 0;
     HDC deviceContexts[10] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 	HGLRC glContexts[10] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+	int swapControlValue[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 #endif
 
 	TextureFilter minFilters[10][32];
@@ -87,13 +89,27 @@ void Graphics::setup() {
 }
 #endif
 
-void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
+#if defined(SYS_WINDOWS)
+void Graphics::enableSwapControl(int window) {
+	if (wglSwapIntervalEXT != nullptr) {
+		BOOL result = wglSwapIntervalEXT(::swapControlValue[window]);
+		assert(result);
+	}
+}
+
+void Graphics::disableSwapControl(int window) {
+	if (wglSwapIntervalEXT != nullptr) {
+		BOOL result = wglSwapIntervalEXT(SwapControlNoVsync);
+		assert(result);
+	}
+}
+#endif
+
+void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits, int swapControl) {
 #ifdef SYS_WINDOWS
 	HWND windowHandle = (HWND)System::windowHandle(windowId);
 
 #ifndef VR_RIFT
-	// TODO (DK) use provided settings for depth/stencil buffer
-
 	PIXELFORMATDESCRIPTOR pfd =			// pfd Tells Windows How We Want Things To Be
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
@@ -116,11 +132,12 @@ void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
 		0, 0, 0							// Layer Masks Ignored
 	};
 
-	deviceContexts[windowId] = GetDC(windowHandle);
+	HDC tmpDC = deviceContexts[windowId] = GetDC(windowHandle);
 	GLuint pixelFormat = ChoosePixelFormat(deviceContexts[windowId], &pfd);
 	SetPixelFormat(deviceContexts[windowId], pixelFormat, &pfd);
-	HGLRC tempGlContext = wglCreateContext(deviceContexts[windowId]);
-	wglMakeCurrent(deviceContexts[windowId], tempGlContext);
+
+	HGLRC tempGlContext = wglCreateContext(tmpDC);
+	wglMakeCurrent(tmpDC, tempGlContext);
 	Kore::System::currentDeviceId = windowId;
 
 	// TODO (DK) make a Graphics::setup() (called from System::setup()) and call it there only once?
@@ -148,6 +165,14 @@ void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
 		glContexts[windowId] = tempGlContext;
 	}
 
+	::swapControlValue[windowId] = swapControl;
+
+	if (windowId == 0) {
+		Graphics::enableSwapControl(windowId);
+	} else {
+		Graphics::disableSwapControl(windowId);
+	}
+
 	ShowWindow(windowHandle, SW_SHOW);
 	SetForegroundWindow(windowHandle); // Slightly Higher Priority
 	SetFocus(windowHandle); // Sets Keyboard Focus To The Window
@@ -168,13 +193,6 @@ void Graphics::init(int windowId, int depthBufferBits, int stencilBufferBits) {
 	for (int i = 0; i < 32; ++i) {
 		minFilters[windowId][i] = LinearFilter;
 		mipFilters[windowId][i] = NoMipFilter;
-	}
-#endif
-
-#ifdef SYS_WINDOWS
-	if (windowId == 0) {
-		// TODO (DK) check if we actually want vsync
-		if (wglSwapIntervalEXT != nullptr) wglSwapIntervalEXT(1);
 	}
 #endif
 
@@ -310,7 +328,8 @@ void beginGL();
 
 #if defined(SYS_WINDOWS)
 void Graphics::makeCurrent(int contextId) {
-	wglMakeCurrent(deviceContexts[contextId], glContexts[contextId]);
+//	wglMakeCurrent(deviceContexts[contextId], glContexts[contextId]);
+	wglMakeCurrent(deviceContexts[contextId], glContexts[0]);
 }
 #endif
 
@@ -446,7 +465,7 @@ void Graphics::setStencilParameters(ZCompareMode compareMode, StencilAction both
 
 #if defined(SYS_WINDOWS)
 void Graphics::clearCurrent() {
-	wglMakeCurrent(nullptr, nullptr);
+	//wglMakeCurrent(nullptr, nullptr);
 }
 #endif
 

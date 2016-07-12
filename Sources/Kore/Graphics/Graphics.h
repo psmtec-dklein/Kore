@@ -190,6 +190,10 @@ namespace Kore {
 		void setTextureOperation(TextureOperation operation, TextureArgument arg1, TextureArgument arg2);
 		void setColorMask(bool red, bool green, bool blue, bool alpha);
 
+        void setSwapControlValue(int value);
+        void enableSwapControl(int windowId = 0);
+        void disableSwapControl(int windowId = 0);
+        
 		bool vsynced();
 		unsigned refreshRate();
 		bool nonPow2TexturesSupported();
@@ -200,7 +204,7 @@ namespace Kore {
 
 		void clear(uint flags, uint color = 0, float depth = 1.0f, int stencil = 0);
 
-		void init(int windowId, int depthBufferBits, int stencilBufferBits);
+		void init(int windowId, int depthBufferBits, int stencilBufferBits, int swapControl = 1);
 		void destroy(int windowId);
 
 		extern bool fullscreen;

@@ -36,6 +36,7 @@ namespace Kore {
 		WindowMode mode;
 		bool showWindow;
 		RendererOptions rendererOptions;
+        int swapControl;
 
 		WindowOptions() {
 			showWindow = true;
@@ -51,6 +52,8 @@ namespace Kore {
 			resizable = false;
 			maximizable = false;
 			minimizable = true;
+            
+            swapControl = 1;
 		}
     };
 

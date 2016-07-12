@@ -27,6 +27,9 @@ namespace {
     //static int snglBuf[] = {GLX_RGBA, GLX_DEPTH_SIZE, 16, GLX_STENCIL_SIZE, 8, None};
     //static int dblBuf[]  = {GLX_RGBA, GLX_DEPTH_SIZE, 16, GLX_STENCIL_SIZE, 8, GLX_DOUBLEBUFFER, None};
 #ifdef OPENGL
+    PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = nullptr;
+    int swapControlValue = 1; // (DK) vsync enabled
+    
     struct MwmHints {
         // These correspond to XmRInt resources. (VendorSE.c)
         int	         flags;
@@ -95,9 +98,27 @@ namespace {
 }
 #endif
 
+namespace Kore { namespace Graphics {
+void setSwapControlValue( int value ) {
+    windowimpl::swapControlValue = value;
+}
+
+void enableSwapControl( int window ) {
+#if defined(OPENGL)
+    glXSwapIntervalEXT(dpy, windowimpl::windows[window]->handle, windowimpl::swapControlValue);
+#endif
+}
+
+void disableSwapControl( int window ) {
+#if defined(OPENGL)
+    glXSwapIntervalEXT(dpy, windowimpl::windows[window]->handle, Kore::SwapControlNoVsync);
+#end
+}
+}}
+
 // TODO (DK) the whole glx stuff should go into Graphics/OpenGL?
 //  -then there would be a better separation between window + context setup
-int createWindow(const char* title, int x, int y, int width, int height, Kore::WindowMode windowMode, int targetDisplay, int depthBufferBits, int stencilBufferBits) {
+int createWindow(const char* title, int x, int y, int width, int height, Kore::WindowMode windowMode, int targetDisplay, int depthBufferBits, int stencilBufferBits, int swapControl) {
 #ifdef OPENGL
     int wcounter = windowimpl::windowCounter + 1;
 
@@ -210,6 +231,16 @@ int createWindow(const char* title, int x, int y, int width, int height, Kore::W
 
     Kore::System::makeCurrent(wcounter);
 
+    if (wcounter == 0) {
+        glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC )glXGetProcAddressARB((const GLubyte *)"glXSwapIntervalEXT");
+        
+        if (glXSwapIntervalEXT == nullptr) {
+            Kore::log(Kore::Error, "glXSwapIntervalEXT not found");
+        }
+        
+        Kore::Graphics::setSwapControlValue(swapControl);
+    }
+    
 	return windowimpl::windowCounter = wcounter;
 #else
 	::windowWidth = width;
@@ -300,7 +331,12 @@ namespace Kore { namespace System {
             strcat(buffer, options.title);
         }
 
-        int id = createWindow(buffer, options.x, options.y, options.width, options.height, options.mode, options.targetDisplay, options.rendererOptions.depthBufferBits, options.rendererOptions.stencilBufferBits);
+        int id = createWindow(
+            buffer, options.x, options.y, options.width, options.height,
+            options.mode, options.targetDisplay,
+            options.rendererOptions.depthBufferBits, options.rendererOptions.stencilBufferBits,
+            options.swapControl);
+
         Graphics::init(id, options.rendererOptions.depthBufferBits, options.rendererOptions.stencilBufferBits);
         return id;
     }
